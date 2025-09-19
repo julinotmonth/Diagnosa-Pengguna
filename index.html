@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnosa Pengguna - SP-PAROK</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .header i {
+            font-size: 2.5rem;
+            color: #e74c3c;
+        }
+
+        .filters {
+            padding: 2rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d68910;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #3498db;
+            border: 2px solid #3498db;
+        }
+
+        .btn-outline:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .table-container {
+            padding: 2rem;
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .data-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .status-selesai {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-proses {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-batal {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .risk-level {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .risk-rendah {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .risk-sedang {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .risk-tinggi {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem;
+            background: #f8f9fa;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination button:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .pagination button.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-section h4 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .detail-item strong {
+            color: #2c3e50;
+        }
+
+        .symptoms-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .symptoms-list li {
+            padding: 0.5rem;
+            background: #e3f2fd;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .recommendations-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations-list li {
+            padding: 0.5rem;
+            background: #e8f5e8;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            border-left: 4px solid #4caf50;
+        }
+
+        @media (max-width: 768px) {
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table {
+                font-size: 0.8rem;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 0.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-chart-line"></i>
+                Diagnosa Pengguna
+            </h1>
+            <p>Sistem Pakar Deteksi Penyakit Rokok (SP-PAROK)</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <i class="fas fa-users" style="color: #3498db;"></i>
+                <h3 id="totalDiagnosa">245</h3>
+                <p>Total Diagnosa</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+                <h3 id="risikoTinggi">42</h3>
+                <p>Risiko Tinggi</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock" style="color: #f39c12;"></i>
+                <h3 id="bulanIni">38</h3>
+                <p>Bulan Ini</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-check-circle" style="color: #27ae60;"></i>
+                <h3 id="selesai">203</h3>
+                <p>Selesai</p>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="filterTanggal">Periode</label>
+                    <select id="filterTanggal">
+                        <option value="">Semua Periode</option>
+                        <option value="hari">Hari Ini</option>
+                        <option value="minggu">7 Hari Terakhir</option>
+                        <option value="bulan">Bulan Ini</option>
+                        <option value="tahun">Tahun Ini</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterDiagnosa">Diagnosa</label>
+                    <select id="filterDiagnosa">
+                        <option value="">Semua Diagnosa</option>
+                        <option value="Bronkitis Kronis">Bronkitis Kronis</option>
+                        <option value="PPOK">PPOK</option>
+                        <option value="Kemungkinan Kanker Paru">Kemungkinan Kanker Paru</option>
+                        <option value="Gejala Ringan">Gejala Ringan</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterRisiko">Tingkat Risiko</label>
+                    <select id="filterRisiko">
+                        <option value="">Semua Risiko</option>
+                        <option value="rendah">Rendah (< 50%)</option>
+                        <option value="sedang">Sedang (50-75%)</option>
+                        <option value="tinggi">Tinggi (> 75%)</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterStatus">Status</label>
+                    <select id="filterStatus">
+                        <option value="">Semua Status</option>
+                        <option value="selesai">Selesai</option>
+                        <option value="proses">Dalam Proses</option>
+                        <option value="batal">Dibatalkan</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="searchNama">Cari Nama</label>
+                    <input type="text" id="searchNama" placeholder="Masukkan nama pasien">
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary" onclick="applyFilters()">
+                        <i class="fas fa-search"></i> Filter
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-outline" onclick="resetFilters()">
+                        <i class="fas fa-refresh"></i> Reset
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-success" onclick="exportData()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama Pasien</th>
+                        <th>Tanggal</th>
+                        <th>Usia</th>
+                        <th>Diagnosa</th>
+                        <th>Probabilitas</th>
+                        <th>Risiko</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="diagnosisTable">
+                    <!-- Data akan diisi oleh JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <button onclick="previousPage()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span id="pageInfo">Halaman 1 dari 5</span>
+            <button onclick="nextPage()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent">
+                <!-- Content akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data - dalam implementasi nyata, data ini akan diambil dari database
+        const diagnosisData = [
+            {
+                id: 'DX001',
+                nama: 'Ahmad Santoso',
+                tanggal: '2024-12-19',
+                usia: 45,
+                diagnosa: 'Bronkitis Kronis',
+                probabilitas: 78,
+                status: 'selesai',
+                lamaMerokok: 15,
+                rokokPerHari: 20,
+                gejala: ['Batuk kronis', 'Sesak napas', 'Mudah lelah'],
+                rekomendasi: [
+                    'Segera hentikan kebiasaan merokok',
+                    'Konsultasikan dengan dokter spesialis paru',
+                    'Hindari asap rokok dan polusi udara'
+                ]
+            },
+            {
+                id: 'DX002',
+                nama: 'Siti Rahma',
+                tanggal: '2024-12-18',
+                usia: 52,
+                diagnosa: 'PPOK',
+                probabilitas: 85,
+                status: 'selesai',
+                lamaMerokok: 25,
+                rokokPerHari: 15,
+                gejala: ['Sesak napas', 'Nafas berbunyi', 'Mudah lelah', 'Batuk kronis'],
+                rekomendasi: [
+                    'Segera berhenti merokok total',
+                    'Konsultasi dengan dokter paru segera',
+                    'Gunakan masker saat keluar rumah'
+                ]
+            },
+            {
+                id: 'DX003',
+                nama: 'Budi Hartono',
+                tanggal: '2024-12-17',
+                usia: 58,
+                diagnosa: 'Kemungkinan Kanker Paru',
+                probabilitas: 92,
+                status: 'proses',
+                lamaMerokok: 30,
+                rokokPerHari: 25,
+                gejala: ['Batuk darah', 'Berat badan turun', 'Nyeri dada', 'Mudah lelah'],
+                rekomendasi: [
+                    'SEGERA konsultasi dengan dokter onkologi',
+                    'Lakukan pemeriksaan CT scan paru',
+                    'Berhenti merokok sekarang juga'
+                ]
+            },
+            {
+                id: 'DX004',
+                nama: 'Maria Theresia',
+                tanggal: '2024-12-16',
+                usia: 38,
+                diagnosa: 'Gejala Ringan Akibat Rokok',
+                probabilitas: 45,
+                status: 'selesai',
+                lamaMerokok: 8,
+                rokokPerHari: 10,
+                gejala: ['Batuk kronis', 'Mudah lelah'],
+                rekomendasi: [
+                    'Pertimbangkan untuk berhenti merokok',
+                    'Konsultasi dengan dokter umum',
+                    'Pola hidup sehat dengan olahraga teratur'
+                ]
+            },
+            {
+                id: 'DX005',
+                nama: 'Eko Prasetyo',
+                tanggal: '2024-12-15',
+                usia: 49,
+                diagnosa: 'Bronkitis Kronis',
+                probabilitas: 72,
+                status: 'selesai',
+                lamaMerokok: 20,
+                rokokPerHari: 18,
+                gejala: ['Batuk kronis', 'Sesak napas', 'Sering infeksi paru'],
+                rekomendasi: [
+                    'Segera hentikan kebiasaan merokok',
+                    'Konsultasikan dengan dokter spesialis paru',
+                    'Perbanyak konsumsi air putih'
+                ]
+            },
+            {
+                id: 'DX006',
+                nama: 'Linda Sari',
+                tanggal: '2024-12-14',
+                usia: 41,
+                diagnosa: 'PPOK',
+                probabilitas: 68,
+                status: 'batal',
+                lamaMerokok: 12,
+                rokokPerHari: 12,
+                gejala: ['Sesak napas', 'Nafas berbunyi', 'Batuk kronis'],
+                rekomendasi: []
+            }
+        ];
+
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let filteredData = [...diagnosisData];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTable();
+            updateStats();
+        });
+
+        function renderTable() {
+            const tbody = document.getElementById('diagnosisTable');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentData = filteredData.slice(startIndex, endIndex);
+
+            tbody.innerHTML = currentData.map(item => {
+                const riskLevel = getRiskLevel(item.probabilitas);
+                const statusClass = `status-${item.status}`;
+                
+                return `
+                    <tr>
+                        <td><strong>${item.id}</strong></td>
+                        <td>${item.nama}</td>
+                        <td>${formatDate(item.tanggal)}</td>
+                        <td>${item.usia} tahun</td>
+                        <td><strong>${item.diagnosa}</strong></td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div style="width: 50px; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                                    <div style="width: ${item.probabilitas}%; height: 100%; background: ${getProbabilityColor(item.probabilitas)};"></div>
+                                </div>
+                                <strong>${item.probabilitas}%</strong>
+                            </div>
+                        </td>
+                        <td><span class="risk-level risk-${riskLevel.class}">${riskLevel.text}</span></td>
+                        <td><span class="status-badge ${statusClass}">${getStatusText(item.status)}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary" onclick="viewDetail('${item.id}')">
+                                    <i class="fas fa-eye"></i> Detail
+                                </button>
+                                <button class="btn btn-success" onclick="downloadReport('${item.id}')">
+                                    <i class="fas fa-download"></i> PDF
+                                </button>
+                                ${item.status === 'proses' ? `
+                                    <button class="btn btn-warning" onclick="followUp('${item.id}')">
+                                        <i class="fas fa-phone"></i> Follow Up
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            updatePagination();
+        }
+
+        function getRiskLevel(probability) {
+            if (probability < 50) {
+                return { class: 'rendah', text: 'Rendah' };
+            } else if (probability < 75) {
+                return { class: 'sedang', text: 'Sedang' };
+            } else {
+                return { class: 'tinggi', text: 'Tinggi' };
+            }
+        }
+
+        function getProbabilityColor(probability) {
+            if (probability < 50) return '#27ae60';
+            if (probability < 75) return '#f39c12';
+            return '#e74c3c';
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'selesai': 'Selesai',
+                'proses': 'Dalam Proses',
+                'batal': 'Dibatalkan'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        function viewDetail(id) {
+            const item = diagnosisData.find(d => d.id === id);
+            if (!item) return;
+
+            const riskLevel = getRiskLevel(item.probabilitas);
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <h2 style="color: #2c3e50; margin-bottom: 2rem;">
+                    <i class="fas fa-file-medical"></i> Detail Diagnosa ${item.id}
+                </h2>
+                
+                <div class="detail-section">
+                    <h4><i class="fas fa-user"></i> Data Pasien</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <strong>Nama:</strong><br>${item.nama}
+                        </div>
+                        <div class="detail-item">
+                            <strong>Usia:</strong><br>${item.usia} tahun
+                        </div>
+                        <div class="detail-item">
+                            <strong>Tanggal Konsultasi:</strong><br>${formatDate(item.tanggal)}
+                        </div>
+                        <div class="detail-item">
+                            <strong>Status:</strong><br>
+                            <span class="status-badge status-${item.status}">${getStatusText(item.status)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-smoking"></i> Riwayat Merokok</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <strong>Lama Merokok:</strong><br>${item.lamaMerokok} tahun
+                        </div>
+                        <div class="detail-item">
+                            <strong>Rokok per Hari:</strong><br>${item.rokokPerHari} batang
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-stethoscope"></i> Hasil Diagnosa</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <strong>Diagnosa:</strong><br>
+                            <span style="color: #e74c3c; font-weight: bold;">${item.diagnosa}</span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Probabilitas:</strong><br>
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
+                                <div style="width: 100px; height: 20px; background: #eee; border-radius: 10px; overflow: hidden;">
+                                    <div style="width: ${item.probabilitas}%; height: 100%; background: ${getProbabilityColor(item.probabilitas)}; border-radius: 10px;"></div>
+                                </div>
+                                <strong style="font-size: 1.2rem; color: ${getProbabilityColor(item.probabilitas)};">${item.probabilitas}%</strong>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Tingkat Risiko:</strong><br>
+                            <span class="risk-level risk-${riskLevel.class}">${riskLevel.text}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-list-ul"></i> Gejala yang Dialami</h4>
+                    <ul class="symptoms-list">
+                        ${item.gejala.map(gejala => `<li><i class="fas fa-check-circle" style="color: #27ae60; margin-right: 0.5rem;"></i>${gejala}</li>`).join('')}
+                    </ul>
+                </div>
+
+                ${item.rekomendasi.length > 0 ? `
+                <div class="detail-section">
+                    <h4><i class="fas fa-prescription"></i> Rekomendasi</h4>
+                    <ul class="recommendations-list">
+                        ${item.rekomendasi.map(rec => `<li><i class="fas fa-arrow-right" style="color: #3498db; margin-right: 0.5rem;"></i>${rec}</li>`).join('')}
+                    </ul>
+                </div>
+                ` : ''}
+
+                <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #eee;">
+                    <button class="btn btn-success" onclick="downloadReport('${item.id}')" style="margin-right: 1rem;">
+                        <i class="fas fa-download"></i> Download PDF
+                    </button>
+                    <button class="btn btn-primary" onclick="closeModal()">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('detailModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        function downloadReport(id) {
+            const item = diagnosisData.find(d => d.id === id);
+            if (!item) return;
+
+            // Create PDF content
+            const printContent = `
+LAPORAN HASIL DIAGNOSA SP-PAROK
+===============================
+
+ID Diagnosa    : ${item.id}
+Nama Pasien    : ${item.nama}
+Usia           : ${item.usia} tahun
+Tanggal        : ${formatDate(item.tanggal)}
+Status         : ${getStatusText(item.status)}
+
+RIWAYAT MEROKOK:
+Lama Merokok   : ${item.lamaMerokok} tahun
+Rokok per Hari : ${item.rokokPerHari} batang
+
+HASIL DIAGNOSA:
+Diagnosa       : ${item.diagnosa}
+Probabilitas   : ${item.probabilitas}%
+Tingkat Risiko : ${getRiskLevel(item.probabilitas).text}
+
+GEJALA YANG DIALAMI:
+${item.gejala.map(g => `• ${g}`).join('\n')}
+
+${item.rekomendasi.length > 0 ? `REKOMENDASI:
+${item.rekomendasi.map(r => `• ${r}`).join('\n')}` : ''}
+
+===============================
+SP-PAROK - Sistem Pakar Deteksi Penyakit Rokok
+Dicetak pada: ${new Date().toLocaleString('id-ID')}
+
+DISCLAIMER:
+Hasil diagnosa ini hanya untuk deteksi awal dan tidak 
+menggantikan konsultasi medis profesional. Selalu 
+konsultasikan kondisi kesehatan dengan dokter.
+            `;
+
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Laporan Diagnosa ${item.id}</title>
+                    <style>
+                        body { font-family: monospace; white-space: pre-wrap; padding: 20px; }
+                    </style>
+                </head>
+                <body>${printContent}</body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function followUp(id) {
+            const item = diagnosisData.find(d => d.id === id);
+            if (!item) return;
+
+            alert(`Follow up untuk pasien ${item.nama}:\n\n` +
+                  `• Hubungi pasien untuk mengecek kondisi terkini\n` +
+                  `• Pastikan pasien mengikuti rekomendasi yang diberikan\n` +
+                  `• Jadwalkan konsultasi lanjutan jika diperlukan\n` +
+                  `• Update status diagnosa berdasarkan perkembangan`);
+        }
+
+        function applyFilters() {
+            const filterTanggal = document.getElementById('filterTanggal').value;
+            const filterDiagnosa = document.getElementById('filterDiagnosa').value;
+            const filterRisiko = document.getElementById('filterRisiko').value;
+            const filterStatus = document.getElementById('filterStatus').value;
+            const searchNama = document.getElementById('searchNama').value.toLowerCase();
+
+            filteredData = diagnosisData.filter(item => {
+                // Filter berdasarkan tanggal
+                if (filterTanggal) {
+                    const itemDate = new Date(item.tanggal);
+                    const now = new Date();
+                    let dateMatch = false;
+
+                    switch (filterTanggal) {
+                        case 'hari':
+                            dateMatch = itemDate.toDateString() === now.toDateString();
+                            break;
+                        case 'minggu':
+                            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                            dateMatch = itemDate >= weekAgo;
+                            break;
+                        case 'bulan':
+                            dateMatch = itemDate.getMonth() === now.getMonth() && 
+                                       itemDate.getFullYear() === now.getFullYear();
+                            break;
+                        case 'tahun':
+                            dateMatch = itemDate.getFullYear() === now.getFullYear();
+                            break;
+                    }
+                    if (!dateMatch) return false;
+                }
+
+                // Filter berdasarkan diagnosa
+                if (filterDiagnosa && !item.diagnosa.includes(filterDiagnosa)) {
+                    return false;
+                }
+
+                // Filter berdasarkan risiko
+                if (filterRisiko) {
+                    const riskLevel = getRiskLevel(item.probabilitas).class;
+                    if (riskLevel !== filterRisiko) return false;
+                }
+
+                // Filter berdasarkan status
+                if (filterStatus && item.status !== filterStatus) {
+                    return false;
+                }
+
+                // Filter berdasarkan nama
+                if (searchNama && !item.nama.toLowerCase().includes(searchNama)) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            currentPage = 1;
+            renderTable();
+            updateStats();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterTanggal').value = '';
+            document.getElementById('filterDiagnosa').value = '';
+            document.getElementById('filterRisiko').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('searchNama').value = '';
+
+            filteredData = [...diagnosisData];
+            currentPage = 1;
+            renderTable();
+            updateStats();
+        }
+
+        function exportData() {
+            const csvContent = [
+                ['ID', 'Nama', 'Tanggal', 'Usia', 'Diagnosa', 'Probabilitas', 'Status', 'Lama Merokok', 'Rokok per Hari'],
+                ...filteredData.map(item => [
+                    item.id,
+                    item.nama,
+                    item.tanggal,
+                    item.usia,
+                    item.diagnosa,
+                    item.probabilitas,
+                    item.status,
+                    item.lamaMerokok,
+                    item.rokokPerHari
+                ])
+            ].map(row => row.join(',')).join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `diagnosa_pengguna_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function updateStats() {
+            const total = filteredData.length;
+            const risikoTinggi = filteredData.filter(item => item.probabilitas > 75).length;
+            const selesai = filteredData.filter(item => item.status === 'selesai').length;
+            
+            const thisMonth = new Date();
+            const bulanIni = filteredData.filter(item => {
+                const itemDate = new Date(item.tanggal);
+                return itemDate.getMonth() === thisMonth.getMonth() && 
+                       itemDate.getFullYear() === thisMonth.getFullYear();
+            }).length;
+
+            document.getElementById('totalDiagnosa').textContent = total;
+            document.getElementById('risikoTinggi').textContent = risikoTinggi;
+            document.getElementById('selesai').textContent = selesai;
+            document.getElementById('bulanIni').textContent = bulanIni;
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            document.getElementById('pageInfo').textContent = `Halaman ${currentPage} dari ${totalPages}`;
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
